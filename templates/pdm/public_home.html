@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统 - 产品数据管理系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-admin {
+            background-color: #28a745;
+        }
+        .btn-admin:hover {
+            background-color: #1e7e34;
+        }
+        .server-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 PDM系统</h1>
+        <p style="text-align: center; color: #666; margin-top: 10px;">产品数据管理系统</p>
+        
+        <div class="status success">
+            <h2>✅ 系统运行正常</h2>
+            <p>PDM系统已成功启动并正在运行</p>
+        </div>
+        
+        <div class="server-info">
+            <strong>服务器信息：</strong><br>
+            公网IP: 159.75.86.36<br>
+            端口: 8000<br>
+            状态: 运行中<br>
+            启动时间: {{ current_time|default:"2026-03-13 09:15:00" }}
+        </div>
+        
+        <div class="status info">
+            <h3>📋 访问方式</h3>
+            <p>由于安全组限制，您需要通过以下方式访问：</p>
+            
+            <h4>方法1: SSH隧道（推荐）</h4>
+            <p>在您的电脑上运行：</p>
+            <div class="server-info">
+                ssh -L 8888:localhost:8000 root@159.75.86.36
+            </div>
+            <p>然后访问：<a href="http://localhost:8888/">http://localhost:8888/</a></p>
+            
+            <h4>方法2: 修改安全组</h4>
+            <p>登录云控制台，开放8000端口入站规则</p>
+            
+            <h4>方法3: 使用Nginx反向代理</h4>
+            <p>配置Nginx将80端口转发到8000端口</p>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/admin" class="btn btn-admin">进入管理后台</a>
+            <a href="/accounts/login/" class="btn">用户登录</a>
+            <a href="/health/" class="btn">健康检查</a>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <h4>🛠️ 系统功能</h4>
+            <ul>
+                <li>✅ 产品管理 - 产品信息、技术参数、版本控制</li>
+                <li>✅ 文档管理 - 文档上传、版本控制、权限管理</li>
+                <li>✅ BOM管理 - 物料清单、组件关系</li>
+                <li>✅ 变更管理 - 变更请求、审批流程</li>
+                <li>✅ 用户认证 - 登录/登出、权限控制</li>
+                <li>✅ 通知系统 - 系统消息通知</li>
+            </ul>
+        </div>
+        
+        <div style="margin-top: 20px; font-size: 12px; color: #666; text-align: center;">
+            <p>PDM系统 v1.0.0 | 开发环境 | 基于Django 6.0</p>
+            <p>如有问题，请检查：1) 安全组规则 2) 防火墙设置 3) 网络连接</p>
+        </div>
+    </div>
+</body>
+</html>

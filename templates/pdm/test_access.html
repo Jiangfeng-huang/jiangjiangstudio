@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统访问测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .access-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 PDM系统访问测试</h1>
+        
+        <div class="status success">
+            <h2>✅ 服务器运行正常</h2>
+            <p>Django开发服务器已启动并正在运行</p>
+        </div>
+        
+        <div class="access-info">
+            <strong>访问信息：</strong><br>
+            公网IP: 159.75.86.36<br>
+            端口: 8000<br>
+            协议: HTTP<br>
+            服务器时间: {{ current_time|default:"2026-03-13 09:36:00" }}
+        </div>
+        
+        <div class="status info">
+            <h3>📋 测试访问</h3>
+            <p>点击以下链接测试系统访问：</p>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <a href="/" class="btn">访问系统首页</a>
+                <a href="/admin" class="btn">访问管理后台</a>
+                <a href="/health/" class="btn">健康检查</a>
+            </div>
+        </div>
+        
+        <div class="status error">
+            <h3>⚠️ 常见问题排查</h3>
+            <p>如果无法访问，请检查：</p>
+            <ol>
+                <li><strong>安全组规则</strong>：确保8000端口已开放入站规则</li>
+                <li><strong>防火墙</strong>：检查服务器防火墙设置</li>
+                <li><strong>浏览器缓存</strong>：清除浏览器缓存后重试</li>
+                <li><strong>网络限制</strong>：确认您的网络没有限制8000端口</li>
+            </ol>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <h4>🔗 直接访问链接：</h4>
+            <div class="access-info">
+                <a href="http://159.75.86.36:8000/" target="_blank">http://159.75.86.36:8000/</a><br>
+                <a href="http://159.75.86.36:8000/admin" target="_blank">http://159.75.86.36:8000/admin</a><br>
+                <a href="http://159.75.86.36:8000/health/" target="_blank">http://159.75.86.36:8000/health/</a>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <h4>📞 技术支持：</h4>
+            <p>如果仍然无法访问，请提供：</p>
+            <ul>
+                <li>浏览器显示的具体错误信息</li>
+                <li>访问时出现的页面截图</li>
+                <li>您的网络环境（公司/家庭网络）</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

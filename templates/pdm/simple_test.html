@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDM系统简单测试</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .success { background: #d4edda; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .error { background: #f8d7da; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .info { background: #d1ecf1; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        a { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 PDM系统访问诊断</h1>
+    <p style="text-align: center; color: #666; margin-top: 5px;">产品数据管理系统</p>
+    
+    <div class="success">
+        <h2>✅ 服务器运行正常</h2>
+        <p>时间: {{ current_time }}</p>
+    </div>
+    
+    <div class="info">
+        <h3>📋 测试链接</h3>
+        <p>点击以下链接测试：</p>
+        <div>
+            <a href="/">系统首页</a>
+            <a href="/admin">管理后台</a>
+            <a href="/health/">健康检查</a>
+            <a href="/test/">测试页面</a>
+            <a href="/public/">公开首页</a>
+        </div>
+    </div>
+    
+    <div class="error">
+        <h3>⚠️ 常见问题解决</h3>
+        <p>如果遇到问题：</p>
+        <ol>
+            <li><strong>清除浏览器缓存</strong> (Ctrl+Shift+Delete)</li>
+            <li><strong>使用隐身模式</strong> (Ctrl+Shift+N)</li>
+            <li><strong>直接访问</strong>：<a href="http://159.75.86.36:8000/" target="_blank">http://159.75.86.36:8000/</a></li>
+            <li><strong>检查网络</strong>：确保没有代理或防火墙阻挡</li>
+        </ol>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <h4>🔗 访问地址：</h4>
+        <p><strong>主系统</strong>：<a href="http://159.75.86.36:8000/" target="_blank">http://159.75.86.36:8000/</a></p>
+        <p><strong>管理后台</strong>：<a href="http://159.75.86.36:8000/admin" target="_blank">http://159.75.86.36:8000/admin</a></p>
+    </div>
+</body>
+</html>

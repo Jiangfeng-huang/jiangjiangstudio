@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.pk %}编辑文档{% else %}上传新文档{% endif %} - PDM系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .file-input {
+            padding: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .file-input:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        .file-input input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            display: block;
+            padding: 20px;
+            color: #666;
+        }
+        .file-label i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+        .file-size {
+            font-size: 12px;
+            color: #666;
+        }
+        .supported-formats {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .field-required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .form-section h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .upload-status {
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+        .upload-success {
+            color: #28a745;
+        }
+        .upload-error {
+            color: #dc3545;
+        }
+        .max-size {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 25px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'pdm:document_list' %}" class="back-link">← 返回文档列表</a>
+        
+        <div class="header">
+            <h1>{% if form.instance.pk %}编辑文档{% else %}上传新文档{% endif %}</h1>
+            <p>{% if form.instance.pk %}修改文档信息{% else %}上传新的文档文件{% endif %}</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" id="documentForm">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="error-message">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-section">
+                <h3>文档基本信息</h3>
+                
+                <div class="form-group">
+                    <label for="id_product" class="field-required">关联产品</label>
+                    <select name="product" id="id_product" class="form-control" required>
+                        <option value="">-- 选择产品 --</option>
+                        {% for product in form.product.field.queryset %}
+                        <option value="{{ product.id }}" 
+                                {% if form.product.value == product.id %}selected{% endif %}>
+                            {{ product.product_code }} - {{ product.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.product.errors %}
+                    <div class="error-message">
+                        {% for error in form.product.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="help-text">选择此文档关联的产品</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_doc_type" class="field-required">文档类型</label>
+                    <select name="doc_type" id="id_doc_type" class="form-control" required>
+                        <option value="">-- 选择文档类型 --</option>
+                        {% for doc_type in form.doc_type.field.queryset %}
+                        <option value="{{ doc_type.id }}" 
+                                {% if form.doc_type.value == doc_type.id %}selected{% endif %}>
+                            {{ doc_type.name }} ({{ doc_type.code }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.doc_type.errors %}
+                    <div class="error-message">
+                        {% for error in form.doc_type.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_title" class="field-required">文档标题</label>
+                    <input type="text" name="title" id="id_title" 
+                           class="form-control" value="{{ form.title.value|default:'' }}"
+                           placeholder="请输入文档标题" required>
+                    {% if form.title.errors %}
+                    <div class="error-message">
+                        {% for error in form.title.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">文档描述</label>
+                    <textarea name="description" id="id_description" 
+                              class="form-control" rows="4"
+                              placeholder="详细描述文档内容、用途等">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                    <div class="error-message">
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>文件上传</h3>
+                
+                <div class="form-group">
+                    <label for="id_file" class="field-required">文档文件</label>
+                    <div class="file-input" id="fileDropArea">
+                        <label for="id_file" class="file-label">
+                            <div>📁</div>
+                            <div>点击选择文件或拖拽文件到这里</div>
+                            <div class="supported-formats">支持格式: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, ZIP, RAR</div>
+                            <div class="max-size">最大文件大小: 50MB</div>
+                        </label>
+                        <input type="file" name="file" id="id_file" 
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar" required>
+                    </div>
+                    <div class="file-name" id="fileName"></div>
+                    <div class="file-size" id="fileSize"></div>
+                    
+                    {% if form.file.errors %}
+                    <div class="error-message">
+                        {% for error in form.file.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="upload-status" id="uploadStatus"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_version_comment">版本说明</label>
+                    <textarea name="version_comment" id="id_version_comment" 
+                              class="form-control" rows="3"
+                              placeholder="本次上传的版本变更说明">{{ form.version_comment.value|default:'' }}</textarea>
+                    {% if form.version_comment.errors %}
+                    <div class="error-message">
+                        {% for error in form.version_comment.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="help-text">简要说明本次上传的文档版本做了哪些修改</div>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn" id="submitBtn">
+                    {% if form.instance.pk %}更新文档{% else %}上传文档{% endif %}
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="history.back()">取消</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('id_file');
+            const fileDropArea = document.getElementById('fileDropArea');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('documentForm');
+            
+            // 文件选择处理
+            fileInput.addEventListener('change', function(e) {
+                if (this.files.length > 0) {
+                    updateFileInfo(this.files[0]);
+                }
+            });
+            
+            // 拖拽上传处理
+            fileDropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#667eea';
+                this.style.background = '#f0f4ff';
+            });
+            
+            fileDropArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                this.style.background = '#f8f9fa';
+            });
+            
+            fileDropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                this.style.background = '#f8f9fa';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateFileInfo(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // 更新文件信息
+            function updateFileInfo(file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                
+                // 检查文件大小
+                const maxSize = 50 * 1024 * 1024; // 50MB
+                if (file.size > maxSize) {
+                    fileName.style.color = '#dc3545';
+                    fileSize.style.color = '#dc3545';
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.5';
+                    alert('文件大小超过50MB限制，请选择较小的文件');
+                } else {
+                    fileName.style.color = '#333';
+                    fileSize.style.color = '#666';
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '1';
+                }
+            }
+            
+            // 格式化文件大小
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // 表单提交处理
+            form.addEventListener('submit', function(e) {
+                const file = fileInput.files[0];
+                if (!file) {
+                    e.preventDefault();
+                    alert('请选择要上传的文件');
+                    return;
+                }
+                
+                // 显示上传进度
+                progressBar.style.display = 'block';
+                submitBtn.disabled = true;
+                submitBtn.textContent = '上传中...';
+                
+                // 模拟上传进度（实际由浏览器处理）
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    progressFill.style.width = progress + '%';
+                    
+                    if (progress >= 95) {
+                        clearInterval(interval);
+                    }
+                }, 100);
+            });
+            
+            // 点击文件区域触发文件选择
+            fileDropArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // 自动填充版本说明
+            const versionComment = document.getElementById('id_version_comment');
+            if (!versionComment.value) {
+                const today = new Date();
+                const dateStr = today.toLocaleDateString('zh-CN');
+                versionComment.placeholder = `例如：${dateStr} 初始版本上传`;
+            }
+        });
+        
+            // 取消按钮备选方案
+            const cancelBtn = document.getElementById('cancelBtn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', function(e) {
+                    // 如果URL无效，使用history.back()
+                    if (!this.href || this.href === '#') {
+                        e.preventDefault();
+                        history.back();
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

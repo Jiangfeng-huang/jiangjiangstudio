@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统 - 登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .login-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+        .system-info {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>🔐 PDM系统登录</h1>
+        
+        <div class="system-info">
+            <p>产品数据管理系统</p>
+            <p>版本 1.0.0</p>
+        </div>
+        
+        {% if form.errors %}
+        <div class="error-message">
+            用户名或密码错误，请重试。
+        </div>
+        {% endif %}
+        
+        <form method="post" action="{% url 'pdm:login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_username">用户名</label>
+                <input type="text" name="username" id="id_username" 
+                       placeholder="请输入用户名" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password">密码</label>
+                <input type="password" name="password" id="id_password" 
+                       placeholder="请输入密码" required>
+            </div>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+            
+            <button type="submit" class="btn-login">登录系统</button>
+        </form>
+        
+        <div class="login-info">
+            <p style="margin-top: 15px;">
+                <a href="/admin/" style="color: #007bff;">访问管理后台</a> |
+                <a href="/public/" style="color: #007bff;">查看公开首页</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

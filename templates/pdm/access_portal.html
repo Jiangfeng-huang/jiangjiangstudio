@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统访问门户</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .portal-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .portal-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        .portal-header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .portal-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .access-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .access-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .access-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .access-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .access-btn:hover {
+            background: #5a6fd8;
+        }
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 30px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .info-item {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .qr-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+        }
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+        }
+        .manual-link {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .manual-link a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .manual-link a:hover {
+            background: white;
+            color: #667eea;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="portal-container">
+        <div class="portal-header">
+            <h1>📦 PDM系统访问门户</h1>
+            <p>产品数据管理系统 - 一站式访问所有功能</p>
+        </div>
+
+        <div class="user-info">
+            <h3 style="margin-top: 0;">👤 用户信息</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">访问地址</div>
+                    <div class="info-value">http://159.75.86.36:8000/</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">系统版本</div>
+                    <div class="info-value">v1.0.0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="access-grid">
+            <div class="access-card">
+                <div class="card-icon">🏠</div>
+                <div class="card-title">系统首页</div>
+                <div class="card-description">
+                    登录后的主界面，包含统计面板、最近记录和快捷操作入口。
+                    提供系统概览和快速访问功能。
+                </div>
+                <a href="/" class="access-btn">访问首页</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">🔐</div>
+                <div class="card-title">用户登录</div>
+                <div class="card-description">
+                    系统登录页面，输入用户名和密码进入系统。
+                    支持管理员和测试用户两种账号。
+                </div>
+                <a href="/login/" class="access-btn">前往登录</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">⚙️</div>
+                <div class="card-title">管理后台</div>
+                <div class="card-description">
+                    Django管理后台，提供完整的数据管理功能。
+                    支持产品、文档、用户等所有数据的增删改查。
+                </div>
+                <a href="/admin/" class="access-btn">访问后台</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">📦</div>
+                <div class="card-title">产品管理</div>
+                <div class="card-description">
+                    产品信息管理，包括创建、编辑、搜索产品。
+                    支持产品编码、名称、技术参数等完整信息管理。
+                </div>
+                <a href="/products/" class="access-btn">管理产品</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">📄</div>
+                <div class="card-title">文档管理</div>
+                <div class="card-description">
+                    文档上传和管理，支持版本控制和权限设置。
+                    关联产品文档，实现文档全生命周期管理。
+                </div>
+                <a href="/documents/" class="access-btn">管理文档</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">🔧</div>
+                <div class="card-title">BOM管理</div>
+                <div class="card-description">
+                    物料清单管理，管理产品组件和物料关系。
+                    支持BOM结构展示、组件添加和导出功能。
+                </div>
+                <a href="/products/1/bom/" class="access-btn">管理BOM</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">🔄</div>
+                <div class="card-title">变更管理</div>
+                <div class="card-description">
+                    变更请求和审批流程管理。
+                    支持变更提交、审批、跟踪和状态管理。
+                </div>
+                <a href="/changes/" class="access-btn">管理变更</a>
+            </div>
+
+            <div class="access-card">
+                <div class="card-icon">📚</div>
+                <div class="card-title">用户手册</div>
+                <div class="card-description">
+                    完整的用户使用手册，包含图文结合的详细说明。
+                    提供系统功能、操作步骤和常见问题解答。
+                </div>
+                <a href="/manual/" class="access-btn">查看手册</a>
+            </div>
+        </div>
+
+        <div class="qr-section">
+            <h3 style="color: white;">📱 手机扫码访问</h3>
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://159.75.86.36:8000/" alt="PDM系统二维码">
+            </div>
+            <p style="color: white; margin-top: 15px;">
+                使用手机扫描二维码，快速访问PDM系统
+            </p>
+        </div>
+
+        <div class="manual-link">
+            <a href="/manual/" target="_blank">📖 查看完整用户手册</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 PDM系统版权所有 | 版本 1.0.0 | 技术支持：PDM系统技术支持</p>
+            <p>访问地址：<a href="http://159.75.86.36:8000/" style="color: white; text-decoration: underline;">http://159.75.86.36:8000/</a></p>
+        </div>
+    </div>
+</body>
+</html>

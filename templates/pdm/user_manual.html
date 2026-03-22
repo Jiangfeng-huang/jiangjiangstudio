@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统 - 用户使用手册</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+        .sidebar {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        .sidebar h3 {
+            color: #667eea;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .toc {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .toc li {
+            margin-bottom: 10px;
+        }
+        .toc a {
+            color: #555;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .toc a:hover {
+            background-color: #f0f0f0;
+            color: #667eea;
+            transform: translateX(5px);
+        }
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .section h2 {
+            color: #333;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        .section h3 {
+            color: #555;
+            margin-top: 25px;
+        }
+        .info-box {
+            background: #e8f4fd;
+            border-left: 4px solid #2196f3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        table tr:hover {
+            background-color: #f5f5f5;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-secondary {
+            background: #48bb78;
+        }
+        .btn-secondary:hover {
+            background: #3ca56d;
+        }
+        .screenshot {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .screenshot img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .screenshot-caption {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            padding: 0;
+        }
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 20px;
+            padding-left: 50px;
+            position: relative;
+        }
+        .step-list li:before {
+            content: counter(step-counter);
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .contact-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+        }
+        .qr-code {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code img {
+            width: 150px;
+            height: 150px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 PDM系统用户使用手册</h1>
+        <p>产品数据管理系统 v1.0.0</p>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h3>📋 目录</h3>
+            <ul class="toc">
+                <li><a href="#intro">1. 系统简介</a></li>
+                <li><a href="#access">2. 访问方式</a></li>
+                <li><a href="#login">3. 用户登录</a></li>
+                <li><a href="#home">4. 系统首页</a></li>
+                <li><a href="#products">5. 产品管理</a></li>
+                <li><a href="#documents">6. 文档管理</a></li>
+                <li><a href="#bom">7. BOM管理</a></li>
+                <li><a href="#changes">8. 变更管理</a></li>
+                <li><a href="#notifications">9. 通知系统</a></li>
+                <li><a href="#reports">10. 报表统计</a></li>
+                <li><a href="#faq">11. 常见问题</a></li>
+                <li><a href="#support">12. 技术支持</a></li>
+            </ul>
+            
+            <div class="qr-code">
+                <h4>📱 快速访问</h4>
+                <div style="background: white; padding: 10px; display: inline-block; border-radius: 8px;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://159.75.86.36:8000/" alt="PDM系统访问二维码">
+                </div>
+                <p>扫描二维码访问系统</p>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section" id="intro">
+                <h2>1. 📖 系统简介</h2>
+                <p><strong>PDM系统</strong>（Product Data Management）是一个专业的产品数据管理系统，旨在帮助企业高效管理产品全生命周期数据。</p>
+                
+                <div class="info-box">
+                    <h4>✨ 主要功能</h4>
+                    <ul>
+                        <li><strong>产品管理</strong> - 产品信息、技术参数、版本控制</li>
+                        <li><strong>文档管理</strong> - 文档上传、版本控制、权限管理</li>
+                        <li><strong>BOM管理</strong> - 物料清单、组件关系</li>
+                        <li><strong>变更管理</strong> - 变更请求、审批流程</li>
+                        <li><strong>用户认证</strong> - 登录/登出、权限控制</li>
+                        <li><strong>通知系统</strong> - 系统消息通知</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section" id="access">
+                <h2>2. 🌐 访问方式</h2>
+                
+                <div class="success-box">
+                    <h4>🎯 主访问地址</h4>
+                    <p style="font-size: 1.2rem; font-weight: bold;">
+                        <a href="http://159.75.86.36:8000/" style="color: #28a745;">http://159.75.86.36:8000/</a>
+                    </p>
+                </div>
+
+                <table>
+                    <tr>
+                        <th>页面名称</th>
+                        <th>访问地址</th>
+                        <th>说明</th>
+                    </tr>
+                    <tr>
+                        <td>系统首页</td>
+                        <td>/</td>
+                        <td>用户登录后的主界面</td>
+                    </tr>
+                    <tr>
+                        <td>登录页面</td>
+                        <td>/login/</td>
+                        <td>用户登录界面</td>
+                    </tr>
+                    <tr>
+                        <td>管理后台</td>
+                        <td>/admin/</td>
+                        <td>管理员后台</td>
+                    </tr>
+                    <tr>
+                        <td>健康检查</td>
+                        <td>/health/</td>
+                        <td>系统状态检查</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="section" id="login">
+                <h2>3. 🔐 用户登录</h2>
+                
+                <div class="screenshot">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 300px; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                        <div style="background: white; padding: 40px; border-radius: 8px; width: 80%; max-width: 400px;">
+                            <h3 style="text-align: center; color: #333;">🔐 PDM系统登录</h3>
+                            <div style="margin: 20px 0;">
+                                <input type="text" placeholder="用户名" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                                <input type="password" placeholder="密码" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
+                            </div>
+                            <button style="width: 100%; padding: 12px; background: #667eea; color: white; border: none; border-radius: 5px; font-weight: bold;">登录系统</button>
+                        </div>
+                    </div>
+                    <p class="screenshot-caption">PDM系统登录页面示意图</p>
+                </div>
+
+                <ol class="step-list">
+                    <li><strong>打开浏览器</strong>，输入访问地址</li>
+                    <li><strong>输入用户名</strong>和<strong>密码</strong></li>
+                    <li>点击<strong>"登录系统"</strong>按钮</li>
+                    <li>登录成功后自动跳转到系统首页</li>
+                </ol>
+                
+                <div class="info-box">
+                    <h4>提示</h4>
+                    <p>如需账号，请联系系统管理员获取。</p>
+                </div>
+            </div>
+
+            <div class="section" id="home">
+                <h2>4. 🏠 系统首页</h2>
+                
+                <div class="screenshot">
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px; text-align: center;">
+                            <h2 style="margin: 0;">📦 PDM系统</h2>
+                            <p>产品数据管理系统 - 专业管理您的产品全生命周期</p>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0;">
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <h3 style="margin: 0 0 10px; color: #333;">产品总数</h3>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea;">12</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <h3 style="margin: 0 0 10px; color: #333;">文档总数</h3>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea;">45</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <h3 style="margin: 0 0 10px; color: #333;">待处理变更</h3>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea;">3</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <h3 style="margin: 0 0 10px; color: #333;">未读通知</h3>
+                                <div style="font-size: 2rem; font-weight: bold; color: #667eea;">5</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="screenshot-caption">PDM系统首页示意图</p>
+                </div>
+            </div>
+
+            <div class="section" id="products">
+                <h2>5. 📦 产品管理</h2>
+                
+                <div class="info-box">
+                    <h4>📋 产品管理功能</h4>
+                    <ul>
+                        <li>创建新产品信息</li>
+                        <li>编辑产品技术参数</li>
+                        <li>管理产品版本</li>
+                        <li>搜索和筛选产品</li>
+                        <li>导出产品数据</li>
+                    </ul>
+                </div>
+
+                <h3>创建新产品步骤</h3>
+                <ol class="step-list">
+                    <li>点击首页的<strong>"创建新产品"</strong>按钮</li>
+                    <li>填写产品基本信息（编码、名称、描述）</li>
+                    <li>输入技术参数和规格</li>
+                    <li>设置产品状态（草稿/发布/归档）</li>
+                    <li>点击<strong>"保存"</strong>完成创建</li>
+                </ol>
+            </div>
+
+            <div class="section" id="documents">
+                <h2>6. 📄 文档管理</h2>
+                
+                <div class="warning-box">
+                    <h4>⚠️ 文档上传注意事项</h4>
+                    <ul>
+                        <li>单文件大小不超过10MB</li>
+                        <li>支持格式：PDF、DOC、DOCX、XLS、XLSX、PPT、PPTX、图片等</li>
+                        <li>重要文档建议添加版本号</li>
+                        <li>设置合适的文档权限</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section" id="bom">
+                <h2>7. 🔧 BOM管理</h2>
+                <p>BOM（物料清单）管理是产品管理的核心功能，用于管理产品的组件和物料关系。</p>
+            </div>
+
+            <div class="section" id="changes">
+                <h2>8. 🔄 变更管理</h2>
+                <p>变更管理系统支持产品、文档、流程的变更申请和审批流程。</p>
+            </div>
+
+            <div class="section" id="notifications">
+                <h2>9. 🔔 通知系统</h2>
+                <p>系统会实时发送各类通知，包括产品更新、文档变更、审批结果等。</p>
+            </div>
+
+            <div class="section" id="reports">
+                <h2>10. 📊 报表统计</h2>
+                <p>提供丰富的数据报表功能，支持产品、文档、变更等数据的统计分析。</p>
+            </div>
+
+            <div class="section" id="faq">
+                <h2>11. ❓ 常见问题</h2>
+                
+                <h3>Q: 忘记密码怎么办？</h3>
+                <p>A: 请联系系统管理员重置密码。</p>
+                
+                <h3>Q: 上传文档失败？</h3>
+                <p>A: 检查文件大小（不超过10MB）和格式是否正确。</p>
+                
+                <h3>Q: 页面加载缓慢？</h3>
+                <p>A: 检查网络连接，或刷新页面重试。</p>
+            </div>
+
+            <div class="section" id="support">
+                <h2>12. 📞 技术支持</h2>
+                
+                <div class="contact-info">
+                    <h4>🛠️ 技术支持信息</h4>
+                    <p><strong>技术支持团队</strong>: PDM系统技术支持</p>
+                    <p><strong>系统版本</strong>: PDM系统 v1.0.0</p>
+                    <p><strong>更新日期</strong>: 2026年3月13日</p>
+                    <p><strong>服务时间</strong>: 工作日 09:00-18:00</p>
+                </div>
+
+                <div style="text-align: center; margin: 30px 0;">
+                    <a href="http://159.75.86.36:8000/" class="btn">🚀 立即访问PDM系统</a>
+                    <a href="http://159.75.86.36:8000/login/" class="btn btn-secondary">🔐 前往登录页面</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2026 PDM系统版权所有 | 版本：1.0.0 | 更新日期：2026年3月13日</p>
+        <p>技术支持：PDM系统技术支持 | 访问地址：<a href="http://159.75.86.36:8000/">http://159.75.86.36:8000/</a></p>
+    </div>
+</body>
+</html>

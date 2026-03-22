@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通知列表 - PDM系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+        }
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .toolbar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+        .notification-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .notification-item {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: background 0.2s;
+        }
+        .notification-item:hover {
+            background: #f8f9fa;
+        }
+        .notification-item.unread {
+            background: #e8f4fd;
+        }
+        .notification-item.unread:hover {
+            background: #d6ebfa;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .icon-info { background: #e3f2fd; color: #1976d2; }
+        .icon-warning { background: #fff3e0; color: #f57c00; }
+        .icon-error { background: #ffebee; color: #d32f2f; }
+        .icon-success { background: #e8f5e9; color: #388e3c; }
+        .notification-content {
+            flex: 1;
+        }
+        .notification-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .notification-message {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .notification-time {
+            color: #999;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .notification-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        .unread-badge {
+            background: #dc3545;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔔 通知列表</h1>
+        <nav class="header-nav">
+            <a href="{% url 'pdm:index' %}">首页</a>
+            <a href="{% url 'pdm:logout' %}">退出</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="toolbar">
+            <span>
+                {% if unread_count %}
+                <strong>{{ unread_count }}</strong> 条未读通知
+                {% else %}
+                所有通知已读
+                {% endif %}
+            </span>
+            <a href="{% url 'pdm:mark_all_notifications_read' %}" class="btn btn-sm">全部标记已读</a>
+        </div>
+
+        <div class="notification-list">
+            {% if notifications %}
+                {% for notification in notifications %}
+                <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                    <div class="notification-icon icon-{{ notification.notification_type }}">
+                        {% if notification.notification_type == 'info' %}ℹ️
+                        {% elif notification.notification_type == 'warning' %}⚠️
+                        {% elif notification.notification_type == 'error' %}❌
+                        {% elif notification.notification_type == 'success' %}✅
+                        {% endif %}
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-title">
+                            {{ notification.title }}
+                            {% if not notification.is_read %}
+                            <span class="unread-badge">未读</span>
+                            {% endif %}
+                        </div>
+                        <div class="notification-message">{{ notification.message }}</div>
+                        <div class="notification-time">{{ notification.created_at|date:"Y-m-d H:i" }}</div>
+                    </div>
+                    <div class="notification-actions">
+                        {% if not notification.is_read %}
+                        <a href="{% url 'pdm:mark_notification_read' notification.pk %}" class="btn btn-sm">标记已读</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-message">
+                    <p>暂无通知</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if is_paginated %}
+        <div class="toolbar" style="justify-content: center; margin-top: 20px;">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-sm">首页</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-sm">上一页</a>
+            {% endif %}
+            
+            <span style="padding: 0 15px;">第 {{ page_obj.number }} 页 / 共 {{ page_obj.paginator.num_pages }} 页</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-sm">下一页</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-sm">末页</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

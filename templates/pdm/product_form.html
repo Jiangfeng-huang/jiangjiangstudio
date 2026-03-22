@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.pk %}编辑产品{% else %}创建新产品{% endif %} - PDM系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .field-required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .form-section h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 18px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .status-draft {
+            background: #ffc107;
+            color: #212529;
+        }
+        .status-published {
+            background: #28a745;
+            color: white;
+        }
+        .status-archived {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'pdm:product_list' %}" class="back-link">← 返回产品列表</a>
+        
+        <div class="header">
+            <h1>{% if form.instance.pk %}编辑产品{% else %}创建新产品{% endif %}</h1>
+            <p>{% if form.instance.pk %}修改产品信息{% else %}填写新产品详细信息{% endif %}</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="error-message">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="form-section">
+                <h3>基本信息</h3>
+                
+                <div class="form-group">
+                    <label for="id_product_code" class="field-required">产品编码</label>
+                    <input type="text" name="product_code" id="id_product_code" 
+                           class="form-control" value="{{ form.product_code.value|default:'' }}"
+                           placeholder="例如：P20260001" required>
+                    {% if form.product_code.errors %}
+                    <div class="error-message">
+                        {% for error in form.product_code.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="help-text">唯一的产品标识符，建议使用公司编码规则</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_name" class="field-required">产品名称</label>
+                    <input type="text" name="name" id="id_name" 
+                           class="form-control" value="{{ form.name.value|default:'' }}"
+                           placeholder="请输入产品名称" required>
+                    {% if form.name.errors %}
+                    <div class="error-message">
+                        {% for error in form.name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_category">产品分类</label>
+                    <select name="category" id="id_category" class="form-control">
+                        <option value="">-- 选择分类 --</option>
+                        {% for category in form.category.field.queryset %}
+                        <option value="{{ category.id }}" 
+                                {% if form.category.value == category.id %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.category.errors %}
+                    <div class="error-message">
+                        {% for error in form.category.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>技术参数</h3>
+                
+                <div class="form-group">
+                    <label for="id_description">产品描述</label>
+                    <textarea name="description" id="id_description" 
+                              class="form-control" rows="4"
+                              placeholder="详细描述产品功能、特点、用途等">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                    <div class="error-message">
+                        {% for error in form.description.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_specifications">技术规格</label>
+                    <textarea name="specifications" id="id_specifications" 
+                              class="form-control" rows="6"
+                              placeholder="输入详细的技术参数和规格">{{ form.specifications.value|default:'' }}</textarea>
+                    {% if form.specifications.errors %}
+                    <div class="error-message">
+                        {% for error in form.specifications.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <div class="help-text">每行一个参数，格式：参数名: 值</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>状态管理</h3>
+                
+                <div class="form-group">
+                    <label for="id_status" class="field-required">产品状态</label>
+                    <select name="status" id="id_status" class="form-control" required>
+                        {% for value, label in form.status.field.choices %}
+                        <option value="{{ value }}" 
+                                {% if form.status.value == value %}selected{% endif %}>
+                            {{ label }}
+                            {% if value == 'draft' %}<span class="status-badge status-draft">草稿</span>
+                            {% elif value == 'published' %}<span class="status-badge status-published">已发布</span>
+                            {% elif value == 'archived' %}<span class="status-badge status-archived">已归档</span>
+                            {% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    {% if form.status.errors %}
+                    <div class="error-message">
+                        {% for error in form.status.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_notes">备注</label>
+                    <textarea name="notes" id="id_notes" 
+                              class="form-control" rows="3"
+                              placeholder="其他需要说明的信息">{{ form.notes.value|default:'' }}</textarea>
+                    {% if form.notes.errors %}
+                    <div class="error-message">
+                        {% for error in form.notes.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn">
+                    {% if form.instance.pk %}更新产品{% else %}创建产品{% endif %}
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="history.back()">取消</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // 自动生成产品编码示例
+        document.addEventListener('DOMContentLoaded', function() {
+            const productCodeInput = document.getElementById('id_product_code');
+            const nameInput = document.getElementById('id_name');
+            
+            // 如果产品编码为空，提供示例
+            if (!productCodeInput.value) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const exampleCode = `P${year}${month}0001`;
+                productCodeInput.placeholder = `例如：${exampleCode}`;
+            }
+            
+            // 状态选择样式更新
+            const statusSelect = document.getElementById('id_status');
+            function updateStatusBadge() {
+                const selectedOption = statusSelect.options[statusSelect.selectedIndex];
+                const statusText = selectedOption.textContent;
+                // 这里可以添加更多状态相关的逻辑
+            }
+            statusSelect.addEventListener('change', updateStatusBadge);
+            updateStatusBadge(); // 初始更新
+        });
+    </script>
+</body>
+</html>

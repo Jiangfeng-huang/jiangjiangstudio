@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品列表 - PDM系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .header-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.2);
+        }
+        .header-nav a:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .toolbar {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        .search-box input {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 250px;
+        }
+        .search-box select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .product-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-draft { background: #ffc107; color: #212529; }
+        .status-review { background: #17a2b8; color: white; }
+        .status-approved { background: #28a745; color: white; }
+        .status-released { background: #667eea; color: white; }
+        .status-obsolete { background: #6c757d; color: white; }
+        .action-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 10px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+        }
+        .pagination a:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .pagination .current {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 产品列表</h1>
+        <nav class="header-nav">
+            <a href="{% url 'pdm:index' %}">首页</a>
+            <a href="{% url 'pdm:product_list' %}">产品</a>
+            <a href="{% url 'pdm:document_list' %}">文档</a>
+            <a href="{% url 'pdm:logout' %}">退出</a>
+        </nav>
+    </div>
+
+    <div class="container">
+        <div class="toolbar">
+            <form method="get" class="search-box">
+                <input type="text" name="search" placeholder="搜索产品编码或名称..." value="{{ request.GET.search }}">
+                <select name="status">
+                    <option value="">所有状态</option>
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn">搜索</button>
+            </form>
+            <a href="{% url 'pdm:product_create' %}" class="btn btn-success">+ 新建产品</a>
+        </div>
+
+        <div class="product-table">
+            {% if products %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>产品编码</th>
+                        <th>产品名称</th>
+                        <th>分类</th>
+                        <th>版本</th>
+                        <th>状态</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td><strong>{{ product.product_code }}</strong></td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.category.name|default:"-" }}</td>
+                        <td>{{ product.version }}</td>
+                        <td>
+                            <span class="status-badge status-{{ product.status }}">
+                                {{ product.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ product.created_at|date:"Y-m-d H:i" }}</td>
+                        <td class="action-links">
+                            <a href="{% url 'pdm:product_detail' product.pk %}">查看</a>
+                            <a href="{% url 'pdm:product_update' product.pk %}">编辑</a>
+                            <a href="{% url 'pdm:bom_list' product.pk %}">BOM</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-message">
+                <p>暂无产品数据</p>
+                <a href="{% url 'pdm:product_create' %}" class="btn btn-success">创建第一个产品</a>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">首页</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">上一页</a>
+            {% endif %}
+            
+            <span class="current">第 {{ page_obj.number }} 页 / 共 {{ page_obj.paginator.num_pages }} 页</span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">下一页</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">末页</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

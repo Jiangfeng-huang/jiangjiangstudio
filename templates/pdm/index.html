@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDM系统 - 产品数据管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card h3 {
+            margin: 0 0 10px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .recent-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .recent-section h2 {
+            color: #333;
+            margin-top: 0;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .recent-item {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .recent-item:last-child {
+            border-bottom: none;
+        }
+        .recent-item .name {
+            font-weight: bold;
+            color: #333;
+        }
+        .recent-item .time {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-info span {
+            color: white;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+        .action-btn:hover {
+            background: #5a6fd8;
+            color: white;
+        }
+        .action-btn.secondary {
+            background: #48bb78;
+        }
+        .action-btn.secondary:hover {
+            background: #3ca56d;
+        }
+        .action-btn.tertiary {
+            background: #ed8936;
+        }
+        .action-btn.tertiary:hover {
+            background: #dd7c2c;
+        }
+        .notification-badge {
+            background: #f56565;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 PDM系统</h1>
+        <p>产品数据管理系统 - 专业管理您的产品全生命周期</p>
+        <div class="user-info">
+            <span>欢迎，{{ user.username }}！</span>
+            <a href="{% url 'pdm:logout' %}" class="logout-btn">退出登录</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <h3>产品总数</h3>
+                <div class="number">{{ stats.total_products }}</div>
+                <div class="label">个产品</div>
+            </div>
+            <div class="stat-card">
+                <h3>文档总数</h3>
+                <div class="number">{{ stats.total_documents }}</div>
+                <div class="label">个文档</div>
+            </div>
+            <div class="stat-card">
+                <h3>待处理变更</h3>
+                <div class="number">{{ stats.pending_changes }}</div>
+                <div class="label">个变更请求</div>
+            </div>
+            <div class="stat-card">
+                <h3>未读通知</h3>
+                <div class="number">{{ stats.unread_notifications }}</div>
+                <div class="label">个通知</div>
+            </div>
+        </div>
+
+        <div class="recent-section">
+            <h2>📋 最近的产品</h2>
+            {% for product in recent_products %}
+            <div class="recent-item">
+                <div class="name">{{ product.product_code }} - {{ product.name }}</div>
+                <div class="time">{{ product.created_at|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 30px; color: #888;">
+                暂无产品数据，请先创建产品
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="recent-section">
+            <h2>📄 最近的文档</h2>
+            {% for document in recent_documents %}
+            <div class="recent-item">
+                <div class="name">{{ document.title }}</div>
+                <div class="time">{{ document.created_at|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 30px; color: #888;">
+                暂无文档数据
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="recent-section">
+            <h2>🔄 待处理的变更</h2>
+            {% for change in pending_changes %}
+            <div class="recent-item">
+                <div class="name">{{ change.title }}</div>
+                <div class="time">{{ change.requested_at|date:"Y-m-d H:i" }}</div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 30px; color: #888;">
+                暂无待处理变更
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="quick-actions">
+            <a href="{% url 'pdm:product_create' %}" class="action-btn">➕ 创建新产品</a>
+            <a href="{% url 'pdm:document_create' %}" class="action-btn secondary">📤 上传新文档</a>
+            <a href="{% url 'pdm:change_create' %}" class="action-btn tertiary">🔄 提交变更请求</a>
+            <a href="{% url 'pdm:notification_list' %}" class="action-btn">🔔 查看通知
+                {% if stats.unread_notifications > 0 %}
+                <span class="notification-badge">{{ stats.unread_notifications }}</span>
+                {% endif %}
+            </a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>PDM系统 v1.0.0 | 基于Django 6.0 | 技术支持：PDM系统技术支持</p>
+        <p>© 2026 PDM系统版权所有 | 当前时间：{% now "Y年m月d日 H:i:s" %}</p>
+    </div>
+</body>
+</html>
