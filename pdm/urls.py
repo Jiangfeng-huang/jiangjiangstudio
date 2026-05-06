@@ -18,10 +18,12 @@ urlpatterns = [
     
     # 认证相关
     path('login/', auth_views.LoginView.as_view(template_name='pdm/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(http_method_names=['get', 'post', 'options'], template_name='pdm/login.html'), name='logout'),
     
     # 产品管理
     path('products/', views.ProductListView.as_view(), name='product_list'),
+    path('products/export/', views.product_export, name='product_export'),
+    path('products/import/', views.product_import, name='product_import'),
     path('products/<int:pk>/', views.ProductDetailView.as_view(), name='product_detail'),
     path('products/create/', views.ProductCreateView.as_view(), name='product_create'),
     path('products/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product_update'),
@@ -50,4 +52,13 @@ urlpatterns = [
     # 报表
     path('reports/products/', views.product_report, name='product_report'),
     path('reports/documents/', views.document_report, name='document_report'),
+    
+    # 背单词功能
+    path('words/', views.word_list, name='word_list'),
+    path('words/import/', views.word_import, name='word_import'),
+    path('words/import/docx/', views.word_import_docx, name='word_import_docx'),
+    path('words/practice/', views.word_practice, name='word_practice'),
+    path('words/check/', views.word_check, name='word_check'),
+    path('words/wrong/', views.wrong_word_list, name='wrong_word_list'),
+    path('words/wrong/<int:wrong_word_id>/clear/', views.clear_wrong_word, name='clear_wrong_word'),
 ]

@@ -5,17 +5,52 @@ from django.utils import timezone
 
 
 class ProductForm(forms.ModelForm):
+    # 添加自定义的FileField用于图片上传
+    image_file = forms.FileField(label='产品图片', required=False, widget=forms.FileInput(attrs={'accept': 'image/*'}))
+    
     class Meta:
         model = Product
         fields = [
             'product_code', 'name', 'description', 'category', 'department',
-            'specifications', 'weight', 'dimensions', 'material'
+            'status',
+            # 产品汇总表字段
+            'chinese_category', 'english_category', 'brand', 'model',
+            'supplier_model', 'color', 'battery_info', 'special_note',
+            'short_name', 'product_owner', 'amazon_category', 'product_size',
+            'package_size', 'product_weight', 'package_weight', 'carton_qty',
+            'carton_dimension', 'carton_weight', 'warranty_period', 'file_link',
+            'certification_file', 'lead_time', 'operation', 'platform_store',
+            'establishment_date', 'asin', 'amazon_fnsku', 'amazon_sku',
+            'multiple_asin', 'mrp', 'flipkart_sku', 'flipkart_fsn',
+            'flipkart_listing', 'product_description', 'remark', 'ean_code'
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
-            'specifications': forms.Textarea(attrs={'rows': 6}),
-            'weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'product_weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'package_weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'carton_weight': forms.NumberInput(attrs={'step': '0.01'}),
+            'mrp': forms.NumberInput(attrs={'step': '0.01'}),
+            'establishment_date': forms.DateInput(attrs={'type': 'date'}),
+            'battery_info': forms.Textarea(attrs={'rows': 2}),
+            'special_note': forms.Textarea(attrs={'rows': 3}),
+            'product_description': forms.Textarea(attrs={'rows': 3}),
+            'remark': forms.Textarea(attrs={'rows': 3}),
         }
+
+    def save(self, commit=True):
+        """保存表单数据，处理图片上传"""
+        instance = super().save(commit=False)
+        
+        # 处理图片上传
+        image_file = self.cleaned_data.get('image_file')
+        if image_file:
+            instance.image = image_file.read()
+            instance.image_content_type = image_file.content_type
+        
+        if commit:
+            instance.save()
+        
+        return instance
     
     def clean_product_code(self):
         product_code = self.cleaned_data['product_code']

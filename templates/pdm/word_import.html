@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>批量导入单词 - PDM系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="content-section">
+            <h2>批量导入单词</h2>
+            <p>请上传Excel文件，系统将批量导入单词信息。</p>
+            <p>Excel格式要求：表头包含"英文"和"中文"或"翻译"列。</p>
+            
+            {% if error %}
+            <div class="alert alert-danger">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="excel_file" class="form-label">选择Excel文件</label>
+                    <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx,.xls" required>
+                </div>
+                <button type="submit" class="btn btn-primary">上传导入</button>
+                <a href="{% url 'pdm:word_practice' %}" class="btn btn-secondary">返回背单词</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

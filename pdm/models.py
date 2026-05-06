@@ -48,21 +48,67 @@ class Product(models.Model):
         ('approved', '已批准'),
         ('released', '已发布'),
         ('obsolete', '已废弃'),
+        ('active', '在售'),
+        ('inactive', '下架'),
+        ('replaced', '已被替换新品'),
+        ('not_for_sale', '不在售'),
+        ('accessory', '配件'),
+        ('discontinued', '停售'),
+        ('coming_soon', '新品待上架'),
+        ('not_released', '未上市'),
+        ('clearance', '在售（清货）'),
     ]
 
     product_code = models.CharField('产品编码', max_length=50, unique=True)
     name = models.CharField('产品名称', max_length=200)
     description = models.TextField('产品描述')
+    image = models.BinaryField('产品图片', null=True, blank=True)
+    image_content_type = models.CharField('图片类型', max_length=100, null=True, blank=True)
     category = models.ForeignKey(ProductCategory, on_delete=models.PROTECT, verbose_name='产品分类')
     department = models.ForeignKey(Department, on_delete=models.PROTECT, verbose_name='负责部门')
     status = models.CharField('状态', max_length=20, choices=STATUS_CHOICES, default='draft')
     version = models.CharField('版本', max_length=20, default='1.0')
     
     # 技术参数
-    specifications = models.TextField('技术规格', blank=True)
-    weight = models.DecimalField('重量(kg)', max_digits=10, decimal_places=2, null=True, blank=True)
-    dimensions = models.CharField('尺寸', max_length=100, blank=True)
-    material = models.CharField('材质', max_length=100, blank=True)
+    
+    
+    # 产品汇总表字段
+    chinese_category = models.CharField('通用名(中文)', max_length=200, blank=True)
+    english_category = models.CharField('通用名(英文)', max_length=200, blank=True)
+    brand = models.CharField('品牌', max_length=100, blank=True)
+    model = models.CharField('产品型号', max_length=100, blank=True)
+    supplier_model = models.CharField('工厂型号', max_length=100, blank=True)
+    color = models.CharField('颜色', max_length=50, blank=True)
+    battery_info = models.CharField('电池信息', max_length=200, blank=True)
+    special_note = models.TextField('特殊说明', blank=True)
+    short_name = models.CharField('短名称（英文）', max_length=100, blank=True)
+    product_owner = models.CharField('产品负责人', max_length=100, blank=True)
+    amazon_category = models.CharField('亚马逊类目', max_length=200, blank=True)
+    product_size = models.CharField('单个产品尺寸', max_length=100, blank=True)
+    package_size = models.CharField('单个产品的包装尺寸', max_length=100, blank=True, default='')
+    product_weight = models.DecimalField('单个产品重量g', max_digits=10, decimal_places=2, null=True, blank=True)
+    package_weight = models.DecimalField('单个产品含包装的重量g', max_digits=10, decimal_places=2, null=True, blank=True)
+    carton_qty = models.IntegerField('满箱数量', null=True, blank=True)
+    carton_dimension = models.CharField('满箱材积', max_length=100, blank=True, default='')
+    carton_weight = models.DecimalField('满箱毛重(KG)', max_digits=10, decimal_places=2, null=True, blank=True)
+    warranty_period = models.IntegerField('保修期(月)', null=True, blank=True)
+    file_link = models.CharField('文件链接', max_length=500, blank=True, default='')
+    certification_file = models.CharField('认证文件', max_length=500, blank=True, default='')
+    lead_time = models.IntegerField('交货期(天)', null=True, blank=True)
+    operation = models.CharField('运营', max_length=100, blank=True, default='')
+    platform_store = models.CharField('平台店铺', max_length=200, blank=True, default='')
+    establishment_date = models.DateField('链接建立日期', null=True, blank=True)
+    asin = models.CharField('ASIN', max_length=50, blank=True, default='')
+    amazon_fnsku = models.CharField('Amazon FNSKU', max_length=50, blank=True, default='')
+    amazon_sku = models.CharField('Amazon SKU', max_length=100, blank=True, default='')
+    multiple_asin = models.CharField('Amazon-多个链接涉及ASIN', max_length=500, blank=True, default='')
+    mrp = models.DecimalField('MRP', max_digits=10, decimal_places=2, null=True, blank=True)
+    flipkart_sku = models.CharField('Flipkart（SKU ID）', max_length=100, blank=True, default='')
+    flipkart_fsn = models.CharField('Flipkart（FSN ID）', max_length=100, blank=True, default='')
+    flipkart_listing = models.CharField('Flipkart Listing ID', max_length=100, blank=True, default='')
+    product_description = models.TextField('货描', blank=True, default='')
+    remark = models.TextField('备注', blank=True, default='')
+    ean_code = models.CharField('EAN码', max_length=20, blank=True, default='')
     
     # 管理信息
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='created_products', verbose_name='创建人')
@@ -80,10 +126,13 @@ class Product(models.Model):
             models.Index(fields=['product_code']),
             models.Index(fields=['status']),
             models.Index(fields=['category']),
+            models.Index(fields=['asin']),
+            models.Index(fields=['ean_code']),
         ]
 
     def __str__(self):
         return f"{self.product_code} - {self.name} v{self.version}"
+
 
 
 class DocumentType(models.Model):
@@ -271,3 +320,56 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
+
+class Word(models.Model):
+    """单词模型"""
+    english = models.CharField('英文单词', max_length=200, unique=True)
+    phonetic = models.CharField('音标', max_length=100, blank=True, default='')
+    part_of_speech = models.CharField('词性', max_length=50, blank=True, default='')
+    chinese = models.CharField('中文翻译', max_length=500)
+    created_at = models.DateTimeField('创建时间', auto_now_add=True)
+    
+    class Meta:
+        verbose_name = '单词'
+        verbose_name_plural = '单词管理'
+        ordering = ['english']
+    
+    def __str__(self):
+        return f"{self.english} - {self.chinese}"
+
+
+class WrongWord(models.Model):
+    """错误单词记录"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wrong_words', verbose_name='用户')
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='wrong_records', verbose_name='单词')
+    wrong_count = models.IntegerField('错误次数', default=1)
+    last_wrong_at = models.DateTimeField('最后错误时间', auto_now=True)
+    created_at = models.DateTimeField('创建时间', auto_now_add=True)
+    
+    class Meta:
+        verbose_name = '错误单词'
+        verbose_name_plural = '错误单词记录'
+        unique_together = ['user', 'word']
+        ordering = ['-last_wrong_at']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.word.english}"
+
+
+class WordProgress(models.Model):
+    """单词学习进度"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='word_progress', verbose_name='用户')
+    word = models.ForeignKey(Word, on_delete=models.CASCADE, related_name='progress_records', verbose_name='单词')
+    mastered = models.BooleanField('已掌握', default=False)
+    reviewed_count = models.IntegerField('复习次数', default=0)
+    last_reviewed_at = models.DateTimeField('最后复习时间', null=True, blank=True)
+    created_at = models.DateTimeField('创建时间', auto_now_add=True)
+    
+    class Meta:
+        verbose_name = '单词进度'
+        verbose_name_plural = '单词学习进度'
+        unique_together = ['user', 'word']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.word.english} ({'已掌握' if self.mastered else '未掌握'})"

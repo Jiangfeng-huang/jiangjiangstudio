@@ -166,11 +166,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login/'
 LOGOUT_REDIRECT_URL = '/'
 
-# 自定义认证后端 - 使用明文密码验证
-AUTHENTICATION_BACKENDS = [
-    'pdm.backends.PlainTextBackend',
-]
-
 # 文件上传配置
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
@@ -181,3 +176,8 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = False
 SECURE_CONTENT_TYPE_NOSNIFF = False
+
+# 自定义认证后端
+AUTHENTICATION_BACKENDS = [
+    'pdm.backends.PlainTextBackend',
+]

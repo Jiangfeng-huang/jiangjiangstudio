@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错误单词本 - PDM系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>错误单词本</h2>
+                <a href="{% url 'pdm:word_practice' %}" class="btn btn-primary">返回背单词</a>
+            </div>
+            
+            {% if wrong_words %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>英文单词</th>
+                            <th>中文翻译</th>
+                            <th>错误次数</th>
+                            <th>最后错误时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for wrong_word in wrong_words %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ wrong_word.word.english }}</td>
+                            <td>{{ wrong_word.word.chinese }}</td>
+                            <td><span class="badge bg-danger">{{ wrong_word.wrong_count }}</span></td>
+                            <td>{{ wrong_word.last_wrong_at|date:"Y-m-d H:i" }}</td>
+                            <td>
+                                <a href="{% url 'pdm:clear_wrong_word' wrong_word.id %}" class="btn btn-sm btn-warning" onclick="return confirm('确定要清除这条错误记录吗？')">清除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-success text-center py-5">
+                <h4>太棒了！没有错误单词</h4>
+                <a href="{% url 'pdm:word_practice' %}" class="btn btn-primary mt-3">继续背单词</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

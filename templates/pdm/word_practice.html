@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背单词 - PDM系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .answer-box {
+            font-size: 1.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+        .result-correct {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        .result-wrong {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="content-section">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'pdm:index' %}" class="btn btn-outline-secondary">← 返回首页</a>
+                    <h2>背单词</h2>
+                </div>
+                <div class="text-right">
+                    <p class="mb-1">剩余单词: <span class="badge bg-primary">{{ total_count }}</span></p>
+                    <p class="mb-1">错误单词: <span class="badge bg-danger">{{ wrong_count }}</span></p>
+                </div>
+            </div>
+            
+            {% if message %}
+            <div class="alert alert-success text-center py-5">
+                <h3>{{ message }}</h3>
+                <a href="{% url 'pdm:word_list' %}" class="btn btn-primary mt-3">查看单词列表</a>
+                <a href="{% url 'pdm:word_import' %}" class="btn btn-secondary mt-3">导入新单词</a>
+            </div>
+            {% else %}
+            <div class="card">
+                <div class="card-header">
+                    <h4>请输入对应的英文单词</h4>
+                </div>
+                <div class="card-body">
+                    <!-- 单词信息显示框 -->
+                    <div class="mb-4">
+                        <label class="form-label">词性</label>
+                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="pos-display">
+                            {{ word.part_of_speech|default:'未标注' }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4" id="phonetic-area" style="display: none;">
+                        <label class="form-label">音标</label>
+                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="phonetic-display">
+                            {{ word.phonetic|default:'未标注' }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">中文含义</label>
+                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="chinese-display">
+                            {{ word.chinese }}
+                        </div>
+                    </div>
+                    
+                    <!-- 用户输入框 -->
+                    <div class="mb-4">
+                        <label class="form-label">请输入英文单词</label>
+                        <input type="text" class="form-control answer-box" id="english-input" placeholder="输入英文单词..." autofocus>
+                        <input type="hidden" id="word-id" value="{{ word.id }}">
+                    </div>
+                    
+                    <!-- 结果显示区域 -->
+                    <div class="mb-4" id="result-area" style="display: none;">
+                        <div class="alert" id="result-alert">
+                            <strong id="result-text"></strong>
+                            <span id="correct-answer" style="display: none;">
+                                <br>正确答案: <strong id="answer-text"></strong>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- 操作按钮 -->
+                    <button type="button" class="btn btn-primary" id="submit-btn">提交答案</button>
+                    <button type="button" class="btn btn-secondary" id="next-btn" style="display: none;">下一个</button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'pdm:word_list' %}" class="btn btn-info">单词列表</a>
+                <a href="{% url 'pdm:wrong_word_list' %}" class="btn btn-danger">错误单词本</a>
+                <a href="{% url 'pdm:word_import' %}" class="btn btn-success">Excel导入</a>
+                <a href="{% url 'pdm:word_import_docx' %}" class="btn btn-primary">Word导入</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const englishInput = document.getElementById('english-input');
+            const submitBtn = document.getElementById('submit-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const resultArea = document.getElementById('result-area');
+            const resultAlert = document.getElementById('result-alert');
+            const resultText = document.getElementById('result-text');
+            const correctAnswer = document.getElementById('correct-answer');
+            const answerText = document.getElementById('answer-text');
+            const chineseDisplay = document.getElementById('chinese-display');
+            const phoneticDisplay = document.getElementById('phonetic-display');
+            const phoneticArea = document.getElementById('phonetic-area');
+            const posDisplay = document.getElementById('pos-display');
+
+            // 提交答案
+            submitBtn.addEventListener('click', function() {
+                const wordId = document.getElementById('word-id').value;
+                const answer = englishInput.value.trim();
+                
+                if (!answer) {
+                    alert('请输入答案');
+                    return;
+                }
+
+                fetch('{% url "pdm:word_check" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        word_id: wordId,
+                        answer: answer
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultArea.style.display = 'block';
+                    phoneticArea.style.display = 'block';
+                    
+                    if (data.correct) {
+                        resultAlert.className = 'alert alert-success';
+                        resultText.textContent = '回答正确！';
+                        correctAnswer.style.display = 'none';
+                    } else {
+                        resultAlert.className = 'alert alert-danger';
+                        resultText.textContent = '回答错误！';
+                        answerText.textContent = data.correct_answer;
+                        correctAnswer.style.display = 'block';
+                    }
+                    
+                    submitBtn.style.display = 'none';
+                    englishInput.disabled = true;
+                    
+                    if (data.next_word) {
+                        nextBtn.style.display = 'inline-block';
+                        nextBtn.onclick = function() {
+                            document.getElementById('word-id').value = data.next_word.id;
+                            posDisplay.textContent = data.next_word.part_of_speech || '未标注';
+                            phoneticDisplay.textContent = data.next_word.phonetic || '未标注';
+                            phoneticArea.style.display = 'none';
+                            chineseDisplay.textContent = data.next_word.chinese;
+                            englishInput.value = '';
+                            englishInput.disabled = false;
+                            resultArea.style.display = 'none';
+                            nextBtn.style.display = 'none';
+                            submitBtn.style.display = 'inline-block';
+                            englishInput.focus();
+                        };
+                        
+                        // 正确答案自动跳到下一个
+                        if (data.correct) {
+                            setTimeout(nextBtn.onclick, 500);
+                        }
+                    } else {
+                        // 所有单词都掌握了
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('提交失败，请重试');
+                });
+            });
+
+            // 回车键提交
+            englishInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitBtn.click();
+                }
+            });
+        });
+
+        function getCSRFToken() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const parts = cookie.trim().split('=');
+                if (parts[0] === 'csrftoken') {
+                    return parts[1];
+                }
+            }
+            return '';
+        }
+    </script>
+</body>
+</html>
