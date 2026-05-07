@@ -860,7 +860,7 @@ def word_list(request):
 def word_practice(request):
     """背单词"""
     from .models import Word, WordProgress, WrongWord
-    from datetime import datetime
+    from datetime import datetime, timedelta
     
     # 获取日期筛选参数
     filter_date = request.GET.get('date', '').strip()
@@ -874,7 +874,12 @@ def word_practice(request):
         try:
             # 支持 yyyymmdd 格式
             date_obj = datetime.strptime(filter_date, '%Y%m%d').date()
-            available_words = available_words.filter(created_at__date=date_obj)
+            # 构建时间范围（UTC时间）
+            from django.utils import timezone
+            start_datetime = timezone.make_aware(datetime(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0))
+            end_datetime = timezone.make_aware(datetime(date_obj.year, date_obj.month, date_obj.day, 23, 59, 59))
+            # 使用UTC时间范围查询
+            available_words = available_words.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
         except ValueError:
             pass
     
