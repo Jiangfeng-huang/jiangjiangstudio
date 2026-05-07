@@ -66,9 +66,10 @@
                 <div class="card-body">
                     <!-- 单词信息显示框 -->
                     <div class="mb-4">
-                        <label class="form-label">词性</label>
-                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="pos-display">
-                            {{ word.part_of_speech|default:'未标注' }}
+                        <label class="form-label">中文含义（词性）</label>
+                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="chinese-display">
+                            {{ word.chinese }}
+                            <span class="text-muted" id="pos-display">（{{ word.part_of_speech|default:'未标注' }}）</span>
                         </div>
                     </div>
                     
@@ -76,13 +77,6 @@
                         <label class="form-label">音标</label>
                         <div class="answer-box border-2 border-primary rounded-lg bg-light" id="phonetic-display">
                             {{ word.phonetic|default:'未标注' }}
-                        </div>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="form-label">中文含义</label>
-                        <div class="answer-box border-2 border-primary rounded-lg bg-light" id="chinese-display">
-                            {{ word.chinese }}
                         </div>
                     </div>
                     
@@ -178,10 +172,12 @@
                         nextBtn.style.display = 'inline-block';
                         nextBtn.onclick = function() {
                             document.getElementById('word-id').value = data.next_word.id;
-                            posDisplay.textContent = data.next_word.part_of_speech || '未标注';
+                            // 更新中文含义和词性（合并显示）
+                            chineseDisplay.innerHTML = data.next_word.chinese + 
+                                '<span class=\"text-muted\" id=\"pos-display\">（' + 
+                                (data.next_word.part_of_speech || '未标注') + '）</span>';
                             phoneticDisplay.textContent = data.next_word.phonetic || '未标注';
                             phoneticArea.style.display = 'none';
-                            chineseDisplay.textContent = data.next_word.chinese;
                             englishInput.value = '';
                             englishInput.disabled = false;
                             resultArea.style.display = 'none';
