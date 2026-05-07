@@ -40,17 +40,14 @@
                 <form method="get" action="{% url 'pdm:word_practice' %}">
                     <div class="d-flex align-items-center gap-3">
                         <label for="filter_date" class="form-label mb-0">按导入日期筛选:</label>
-                        <select name="date" id="filter_date" class="form-select" onchange="this.form.submit()">
-                            <option value="">全部日期</option>
-                            {% for date in available_dates %}
-                            <option value="{{ date|date:'Y-m-d' }}" {% if filter_date == date|date:'Y-m-d' %}selected{% endif %}>
-                                {{ date|date:'Y年m月d日' }}
-                            </option>
-                            {% endfor %}
-                        </select>
+                        <input type="text" name="date" id="filter_date" class="form-control" 
+                               placeholder="yyyymmdd" maxlength="8" 
+                               value="{{ filter_date }}" style="width: 120px;">
+                        <button type="submit" class="btn btn-primary">查询</button>
                         {% if filter_date %}
                         <a href="{% url 'pdm:word_practice' %}" class="btn btn-outline-secondary">清除筛选</a>
                         {% endif %}
+                        <span class="text-muted text-sm">格式: 20260507</span>
                     </div>
                 </form>
             </div>

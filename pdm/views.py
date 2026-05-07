@@ -863,16 +863,17 @@ def word_practice(request):
     from datetime import datetime
     
     # 获取日期筛选参数
-    filter_date = request.GET.get('date', '')
+    filter_date = request.GET.get('date', '').strip()
     
     # 获取未掌握的单词（排除已掌握的）
     mastered_word_ids = WordProgress.objects.filter(user=request.user, mastered=True).values_list('word_id', flat=True)
     available_words = Word.objects.exclude(id__in=mastered_word_ids)
     
-    # 按日期筛选
+    # 按日期筛选（支持 yyyymmdd 格式）
     if filter_date:
         try:
-            date_obj = datetime.strptime(filter_date, '%Y-%m-%d').date()
+            # 支持 yyyymmdd 格式
+            date_obj = datetime.strptime(filter_date, '%Y%m%d').date()
             available_words = available_words.filter(created_at__date=date_obj)
         except ValueError:
             pass
@@ -890,15 +891,11 @@ def word_practice(request):
     else:
         current_word = available_words.get(id=current_word_id)
     
-    # 获取所有可选择的日期
-    all_dates = Word.objects.dates('created_at', 'day', order='DESC')
-    
     context = {
         'word': current_word,
         'total_count': available_words.count(),
         'wrong_count': WrongWord.objects.filter(user=request.user).count(),
         'filter_date': filter_date,
-        'available_dates': all_dates,
     }
     
     return render(request, 'pdm/word_practice.html', context)
