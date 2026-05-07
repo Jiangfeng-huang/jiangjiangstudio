@@ -860,13 +860,26 @@ def word_list(request):
 def word_practice(request):
     """背单词"""
     from .models import Word, WordProgress, WrongWord
+    from datetime import datetime
+    
+    # 获取日期筛选参数
+    filter_date = request.GET.get('date', '')
     
     # 获取未掌握的单词（排除已掌握的）
     mastered_word_ids = WordProgress.objects.filter(user=request.user, mastered=True).values_list('word_id', flat=True)
     available_words = Word.objects.exclude(id__in=mastered_word_ids)
     
+    # 按日期筛选
+    if filter_date:
+        try:
+            date_obj = datetime.strptime(filter_date, '%Y-%m-%d').date()
+            available_words = available_words.filter(created_at__date=date_obj)
+        except ValueError:
+            pass
+    
     if not available_words.exists():
-        return render(request, 'pdm/word_practice.html', {'message': '恭喜！所有单词都已掌握！'})
+        message = '恭喜！所有单词都已掌握！' if not filter_date else '该日期没有未掌握的单词！'
+        return render(request, 'pdm/word_practice.html', {'message': message, 'filter_date': filter_date})
     
     # 获取当前单词（从session中获取，默认为第一个）
     current_word_id = request.session.get('current_word_id')
@@ -877,10 +890,15 @@ def word_practice(request):
     else:
         current_word = available_words.get(id=current_word_id)
     
+    # 获取所有可选择的日期
+    all_dates = Word.objects.dates('created_at', 'day', order='DESC')
+    
     context = {
         'word': current_word,
         'total_count': available_words.count(),
         'wrong_count': WrongWord.objects.filter(user=request.user).count(),
+        'filter_date': filter_date,
+        'available_dates': all_dates,
     }
     
     return render(request, 'pdm/word_practice.html', context)

@@ -35,6 +35,26 @@
                 </div>
             </div>
             
+            <!-- 日期筛选 -->
+            <div class="mb-4 p-3 bg-light rounded">
+                <form method="get" action="{% url 'pdm:word_practice' %}">
+                    <div class="d-flex align-items-center gap-3">
+                        <label for="filter_date" class="form-label mb-0">按导入日期筛选:</label>
+                        <select name="date" id="filter_date" class="form-select" onchange="this.form.submit()">
+                            <option value="">全部日期</option>
+                            {% for date in available_dates %}
+                            <option value="{{ date|date:'Y-m-d' }}" {% if filter_date == date|date:'Y-m-d' %}selected{% endif %}>
+                                {{ date|date:'Y年m月d日' }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if filter_date %}
+                        <a href="{% url 'pdm:word_practice' %}" class="btn btn-outline-secondary">清除筛选</a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            
             {% if message %}
             <div class="alert alert-success text-center py-5">
                 <h3>{{ message }}</h3>
