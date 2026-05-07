@@ -937,7 +937,7 @@ def word_check(request):
                 wrong_word, created = WrongWord.objects.get_or_create(user=request.user, word=word)
                 if not created:
                     wrong_word.wrong_count += 1
-                    wrong_word.save()
+                wrong_word.save()
             
             word.save()
             progress.save()
