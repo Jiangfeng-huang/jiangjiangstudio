@@ -31,6 +31,8 @@
                             <th>音标</th>
                             <th>词性</th>
                             <th>中文翻译</th>
+                            <th>背诵次数</th>
+                            <th>错误次数</th>
                             <th>添加时间</th>
                         </tr>
                     </thead>
@@ -42,6 +44,8 @@
                             <td>{{ word.phonetic|default:'-' }}</td>
                             <td>{{ word.part_of_speech|default:'-' }}</td>
                             <td>{{ word.chinese }}</td>
+                            <td>{{ word.practice_count }}</td>
+                            <td>{{ word.wrong_count }}</td>
                             <td>{{ word.created_at|date:"Y-m-d" }}</td>
                         </tr>
                         {% endfor %}

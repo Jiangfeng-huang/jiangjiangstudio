@@ -918,6 +918,9 @@ def word_check(request):
             word = Word.objects.get(id=word_id)
             correct = user_answer == word.english.lower()
             
+            # 更新单词的背诵次数
+            word.practice_count += 1
+            
             # 更新学习进度
             progress, _ = WordProgress.objects.get_or_create(user=request.user, word=word)
             progress.reviewed_count += 1
@@ -928,12 +931,15 @@ def word_check(request):
                 # 如果之前在错误记录中，删除
                 WrongWord.objects.filter(user=request.user, word=word).delete()
             else:
+                # 更新单词的错误次数
+                word.wrong_count += 1
                 # 添加到错误记录
                 wrong_word, created = WrongWord.objects.get_or_create(user=request.user, word=word)
                 if not created:
                     wrong_word.wrong_count += 1
                     wrong_word.save()
             
+            word.save()
             progress.save()
             
             # 获取下一个未掌握的单词

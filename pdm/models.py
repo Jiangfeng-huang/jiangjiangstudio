@@ -328,6 +328,8 @@ class Word(models.Model):
     phonetic = models.CharField('音标', max_length=100, blank=True, default='')
     part_of_speech = models.CharField('词性', max_length=50, blank=True, default='')
     chinese = models.CharField('中文翻译', max_length=500)
+    practice_count = models.IntegerField('背诵次数', default=0)
+    wrong_count = models.IntegerField('错误次数', default=0)
     created_at = models.DateTimeField('创建时间', auto_now_add=True)
     
     class Meta:
