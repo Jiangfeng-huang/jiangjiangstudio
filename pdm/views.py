@@ -872,14 +872,11 @@ def word_practice(request):
     # 按日期筛选（支持 yyyymmdd 格式）
     if filter_date:
         try:
-            # 支持 yyyymmdd 格式
+            # 支持 yyyymmdd 格式，直接匹配日期字符串（避免时区问题）
             date_obj = datetime.strptime(filter_date, '%Y%m%d').date()
-            # 构建时间范围（UTC时间）
-            from django.utils import timezone
-            start_datetime = timezone.make_aware(datetime(date_obj.year, date_obj.month, date_obj.day, 0, 0, 0))
-            end_datetime = timezone.make_aware(datetime(date_obj.year, date_obj.month, date_obj.day, 23, 59, 59))
-            # 使用UTC时间范围查询
-            available_words = available_words.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
+            date_str = date_obj.strftime('%Y-%m-%d')
+            # 使用字符串包含查询，直接匹配数据库中的日期部分
+            available_words = available_words.filter(created_at__contains=date_str)
         except ValueError:
             pass
     
